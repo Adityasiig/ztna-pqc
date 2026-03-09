@@ -1,0 +1,3 @@
+CONGRATULATIONS! You have successfully bypassed the Zero Trust Gateway and reached the highly classified Goal File.
+
+Project: ZTNA-PQC Gateway
