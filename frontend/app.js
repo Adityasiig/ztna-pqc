@@ -254,6 +254,7 @@ async function loadAuditLogs() {
 // ── Goal File Access Demo ─────────────────────────────
 async function fetchGoalFile() {
     const resDiv = document.getElementById('goal-file-result');
+    const token = sessionStorage.getItem('token');
     resDiv.style.display = 'block';
 
     if (!token) {
