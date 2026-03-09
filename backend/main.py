@@ -4,11 +4,12 @@ New endpoints: device enroll/remove, audit logs, user add
 """
 
 import os
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+import logging
 from datetime import datetime
 
 from auth import login_user
@@ -136,6 +137,28 @@ def api_remove(device_id: str):
 def api_audit_logs(limit: int = 200):
     return get_audit_logs(limit)
 
+
+# ── Goal Proxy ────────────────────────────────────────────────────────────────
+import requests as req
+
+@app.get("/api/fetch-goal")
+def api_fetch_goal(authorization: str = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="No ZTNA Token Provided")
+        
+    try:
+        # Production ready mapping. You can change this URL if your resource server moves.
+        resource_url = "https://ztna-resource-server.onrender.com/secret-file"
+        
+        # Forward the token to the real resource server
+        response = req.get(resource_url, headers={"Authorization": authorization})
+        
+        if response.status_code == 200:
+            return {"content": response.text}
+        else:
+            raise HTTPException(status_code=response.status_code, detail=response.text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ── User Management ───────────────────────────────────────────────────────────
 
