@@ -12,6 +12,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from datetime import datetime
 import logging
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
 
 # Ensure imports work regardless of run directory
 try:
@@ -59,11 +60,11 @@ class AddUserRequest(BaseModel):
 
 @app.get("/")
 def read_root():
-    return FileResponse("frontend/index.html")
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
 @app.get("/dashboard")
 def read_dashboard():
-    return FileResponse("frontend/dashboard.html")
+    return FileResponse(os.path.join(FRONTEND_DIR, "dashboard.html"))
 
 @app.post("/login")
 def api_login(payload: LoginRequest, request: Request):
@@ -154,8 +155,9 @@ def api_add_user(payload: AddUserRequest):
     return {"status": "created", "username": payload.username}
 
 # Static Files
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+app.mount("/static", StaticFiles(directend"), name="static")
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
