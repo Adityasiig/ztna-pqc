@@ -255,6 +255,9 @@ async function loadAuditLogs() {
 async function fetchGoalFile() {
     const resDiv = document.getElementById('goal-file-result');
     const token = sessionStorage.getItem('token');
+    const user = sessionStorage.getItem('user') || 'admin';
+    const device = document.getElementById('pol-dev') ? document.getElementById('pol-dev').value : 'device01';
+
     resDiv.style.display = 'block';
 
     if (!token) {
@@ -262,10 +265,10 @@ async function fetchGoalFile() {
         return;
     }
 
-    resDiv.innerHTML = '<span style="color:#888;">Connecting to Gateway...<br>Verifying Token...<br>Forwarding request to Resource Server...</span>';
+    resDiv.innerHTML = '<span style="color:#888;">Connecting to Gateway...<br>Evaluating ZTNA Policy...<br>Forwarding request to Resource Server...</span>';
 
     try {
-        const response = await fetch(`${API}/api/fetch-goal`, {
+        const response = await fetch(`${API}/api/fetch-goal?username=${user}&device_id=${device}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
