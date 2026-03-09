@@ -251,6 +251,38 @@ async function loadAuditLogs() {
     }
 }
 
+// ── Goal File Access Demo ─────────────────────────────
+async function fetchGoalFile() {
+    const resDiv = document.getElementById('goal-file-result');
+    resDiv.style.display = 'block';
+
+    if (!token) {
+        resDiv.innerHTML = `<span style="color:var(--error);">[ERROR] No active ZTNA Session Token. Please log in first.</span>`;
+        return;
+    }
+
+    resDiv.innerHTML = '<span style="color:#888;">Connecting to Gateway...<br>Verifying Token...<br>Forwarding request to Resource Server...</span>';
+
+    try {
+        const response = await fetch(`${API}/api/fetch-goal`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            resDiv.innerHTML = `<span style="color:var(--text-accent);">[200 OK] Access Granted</span><br><br>${data.content}`;
+            logActivity(`Goal file fetched successfully`, 'info');
+        } else {
+            resDiv.innerHTML = `<span style="color:var(--error);">[${response.status}] Access Denied</span><br><br>${data.detail}`;
+            logActivity(`Goal file fetch denied: ${data.detail}`, 'error');
+        }
+    } catch (error) {
+        resDiv.innerHTML = `<span style="color:var(--error);">Connection failed</span><br><br>${error.message}`;
+        logActivity(`Goal file fetch failed`, 'error');
+    }
+}
+
 // ── Live Activity Log ─────────────────────────────────
 function logActivity(text, type) {
     const list = document.getElementById('log-list');
