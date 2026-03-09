@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZTNA-PQC | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="dash-body">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">🔐</span>
+            <span class="brand-name">ZTNA-PQC</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-tab="overview" onclick="switchTab(this)">
+                <span class="nav-icon">📊</span> Overview
+            </a>
+            <a class="nav-item" data-tab="pqc" onclick="switchTab(this)">
+                <span class="nav-icon">🔑</span> PQC Key
+            </a>
+            <a class="nav-item" data-tab="devices" onclick="switchTab(this)">
+                <span class="nav-icon">💻</span> Devices
+            </a>
+            <a class="nav-item" data-tab="policy" onclick="switchTab(this)">
+                <span class="nav-icon">🛡️</span> Policy Check
+            </a>
+            <a class="nav-item" data-tab="audit" onclick="switchTab(this)">
+                <span class="nav-icon">📋</span> Audit Logs
+            </a>
+        </nav>
+        <div class="sidebar-user">
+            <div class="user-info">
+                <span class="user-role" id="user-role">—</span>
+                <span class="user-algo">Kyber-512 • SQLite DB</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <header class="topbar">
+            <div class="topbar-title" id="topbar-title">Overview</div>
+            <div class="topbar-status">
+                <span class="status-dot green"></span>
+                <span>System Online</span>
+                <span class="topbar-time" id="topbar-time">00:00:00</span>
+            </div>
+        </header>
+
+        <!-- ── Overview ── -->
+        <section id="tab-overview" class="tab-section active">
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-label">Trust Score</div>
+                    <div class="stat-value green">98.4%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Algorithm</div>
+                    <div class="stat-value blue">Kyber-512</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Storage</div>
+                    <div class="stat-value green">SQLite DB</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">TLS Version</div>
+                    <div class="stat-value">1.3</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Network Topology — Zero Trust Flow</div>
+                <div class="topo-wrap">
+                    <svg viewBox="0 0 700 200" class="topo-svg">
+                        <line x1="80" y1="100" x2="210" y2="55" class="topo-line" />
+                        <line x1="80" y1="100" x2="210" y2="145" class="topo-line" />
+                        <line x1="210" y1="55" x2="350" y2="100" class="topo-line" />
+                        <line x1="210" y1="145" x2="350" y2="100" class="topo-line" />
+                        <line x1="350" y1="100" x2="490" y2="55" class="topo-line" />
+                        <line x1="350" y1="100" x2="490" y2="145" class="topo-line" />
+                        <line x1="490" y1="55" x2="620" y2="100" class="topo-line" />
+                        <line x1="490" y1="145" x2="620" y2="100" class="topo-line" />
+                        <g class="topo-node">
+                            <circle cx="80" cy="100" r="14" /><text x="80" y="124" text-anchor="middle">User</text>
+                        </g>
+                        <g class="topo-node">
+                            <circle cx="210" cy="55" r="11" /><text x="210" y="75" text-anchor="middle">Device</text>
+                        </g>
+                        <g class="topo-node">
+                            <circle cx="210" cy="145" r="11" /><text x="210" y="165" text-anchor="middle">IdP</text>
+                        </g>
+                        <g class="topo-node highlight">
+                            <circle cx="350" cy="100" r="16" /><text x="350" y="124" text-anchor="middle">Gateway</text>
+                        </g>
+                        <g class="topo-node">
+                            <circle cx="490" cy="55" r="11" /><text x="490" y="75" text-anchor="middle">PQC-KMS</text>
+                        </g>
+                        <g class="topo-node">
+                            <circle cx="490" cy="145" r="11" /><text x="490" y="165" text-anchor="middle">Policy</text>
+                        </g>
+                        <g class="topo-node">
+                            <circle cx="620" cy="100" r="14" /><text x="620" y="124"
+                                text-anchor="middle">Resource</text>
+                        </g>
+                    </svg>
+                </div>
+                <p class="topo-caption">Every access request passes through the PEP Gateway and is evaluated in
+                    real-time. All events are written to the SQLite audit database.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Live Activity Log</div>
+                <div class="log-list" id="log-list">
+                    <div class="log-item"><span class="log-ts">--:--:--</span><span class="log-text">Waiting for
+                            events...</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── PQC Key ── -->
+        <section id="tab-pqc" class="tab-section">
+            <div class="card">
+                <div class="card-header">Post-Quantum Key Exchange (Kyber-512)</div>
+                <p class="card-desc">Generates a NIST post-quantum keypair using the Kyber-512 KEM. Private key stays on
+                    the server. This event is written to the audit log.</p>
+                <button class="btn-primary" onclick="generateKey()">Generate PQC Key</button>
+                <div id="key-result" style="display:none; margin-top:1.5rem;">
+                    <div class="key-meta" id="key-meta"></div>
+                    <div class="key-box" id="key-box"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Devices ── -->
+        <section id="tab-devices" class="tab-section">
+            <!-- Enroll form -->
+            <div class="card">
+                <div class="card-header">Enroll New Device</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Device ID</label>
+                        <input id="enroll-id" placeholder="e.g. device04">
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input id="enroll-name" placeholder="e.g. Dev Workstation">
+                    </div>
+                    <div class="form-group">
+                        <label>OS</label>
+                        <input id="enroll-os" placeholder="e.g. Windows 11">
+                    </div>
+                    <div class="form-group">
+                        <label>Security Level (1–5)</label>
+                        <input id="enroll-level" type="number" min="1" max="5" value="3">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="enrollDevice()">Enroll Device</button>
+                <div id="enroll-msg" class="msg" style="text-align:left; margin-top:.5rem;"></div>
+            </div>
+
+            <!-- Device Table -->
+            <div class="card">
+                <div class="card-header">Registered Devices</div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Device ID</th>
+                            <th>Name</th>
+                            <th>OS</th>
+                            <th>Trust</th>
+                            <th>Sec Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="device-tbody">
+                        <tr>
+                            <td colspan="6" style="text-align:center;color:#888">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ── Policy ── -->
+        <section id="tab-policy" class="tab-section">
+            <div class="card">
+                <div class="card-header">Zero-Trust Policy Evaluation</div>
+                <p class="card-desc">Test whether a user + device pair is granted or denied access. The result is
+                    written to the audit database.</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input id="pol-user" value="admin">
+                    </div>
+                    <div class="form-group">
+                        <label>Device ID</label>
+                        <input id="pol-dev" value="device01">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="checkPolicy()">Evaluate</button>
+                <div id="policy-result" class="policy-result" style="display:none;"></div>
+            </div>
+        </section>
+
+        <!-- ── Audit Logs ── -->
+        <section id="tab-audit" class="tab-section">
+            <div class="card">
+                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Persistent Audit Log — SQLite Database</span>
+                    <button class="btn-sm-refresh" onclick="loadAuditLogs()">↻ Refresh</button>
+                </div>
+                <p class="card-desc">All authentication attempts, policy decisions, device changes, and PQC key events
+                    are permanently stored in <code>backend/ztna.db</code>.</p>
+                <table class="data-table" id="audit-table">
+                    <thead>
+                        <tr>
+                            <th>Time (UTC)</th>
+                            <th>User</th>
+                            <th>Event</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-tbody">
+                        <tr>
+                            <td colspan="4" style="text-align:center;color:#888">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
