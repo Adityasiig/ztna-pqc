@@ -4,8 +4,8 @@ import time
 
 # Configuration (Update these to your Render URLs once deployed!)
 # Example: GATEWAY_URL = "https://ztna-gateway-xyz.onrender.com"
-GATEWAY_URL = "http://localhost:8000"
-RESOURCE_SERVER_URL = "http://localhost:8080"
+GATEWAY_URL = "https://ztna-gateway.onrender.com"
+RESOURCE_SERVER_URL = "https://ztna-resource-server.onrender.com"
 GOAL_ENDPOINT = f"{RESOURCE_SERVER_URL}/secret-file"
 
 def print_step(msg):
