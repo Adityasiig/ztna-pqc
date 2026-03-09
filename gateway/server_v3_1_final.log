@@ -1,0 +1,4 @@
+--- ZTNA-PQC GATEWAY SERVER ---
+Listening on http://localhost:5000
+ * Serving Flask app 'app'
+ * Debug mode: on
