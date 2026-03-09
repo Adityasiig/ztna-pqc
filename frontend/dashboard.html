@@ -122,6 +122,19 @@
                             events...</span></div>
                 </div>
             </div>
+
+            <!-- Goal File Demo -->
+            <div class="card">
+                <div class="card-header">Secure Resource Access Demo</div>
+                <p class="card-desc">Clicking this button uses your active ZTNA session token to securely fetch the
+                    highly classified Goal File from the isolated Resource Server over the public internet.</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn-primary" onclick="fetchGoalFile()">Fetch Goal File</button>
+                </div>
+                <div id="goal-file-result"
+                    style="display:none; margin-top:1.5rem; background:var(--bg-card); border:1px solid #334155; padding:1rem; border-radius:6px; font-family:monospace; white-space:pre-wrap; color:var(--text-main);">
+                </div>
+            </div>
         </section>
 
         <!-- ── PQC Key ── -->
