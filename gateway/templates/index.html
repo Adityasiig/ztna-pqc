@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZTNA-PQC | HYPER-DETAIL HUD v3.1</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="scan-overlay"></div>
+    <div class="app-shell">
+        <!-- Alert Strip -->
+        <div class="alert-strip">
+            <div class="alert-item blink">
+                <span class="lime">[ALERT_LEVEL_CRITICAL]</span> SYSTEM_SCAN_READY
+            </div>
+            <div class="alert-item">
+                <span class="dim">SENSORS:</span> ACTIVE_MONITOR_PQC
+            </div>
+            <div class="alert-item">
+                <span class="dim">CRYPTO:</span> KYBER_768_V3
+            </div>
+            <div class="alert-item" style="margin-left:auto">
+                <span class="dim">STATUS_CODE:</span> <span class="lime">0x00_A1</span>
+            </div>
+        </div>
+
+        <!-- Sidebar Rail -->
+        <aside class="side-rail">
+            <div class="rail-logo">⚡</div>
+            <a href="#" class="nav-item active" data-tab="dashboard">📊</a>
+            <a href="#" class="nav-item" data-tab="devices">💻</a>
+            <a href="#" class="nav-item" data-tab="policies">🛡️</a>
+            <a href="#" class="nav-item" data-tab="logs">📜</a>
+        </aside>
+
+        <!-- Metrics Header -->
+        <header class="top-metrics-bar">
+            <div class="metric-item">
+                <span class="metric-label">TRUST_INTEGRITY</span>
+                <span class="metric-value" id="global-trust-val">98.4%</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">THREAT_VECTOR</span>
+                <span class="metric-value cyan">ZERO_LOG</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">ACTIVE_NODES</span>
+                <span class="metric-value">08_CONNECTED</span>
+            </div>
+            <div class="metric-item" style="margin-left: auto;">
+                <span class="metric-label">UTC_SEQUENCE</span>
+                <span class="metric-value" id="utc-clock">00:00:00</span>
+            </div>
+        </header>
+
+        <!-- Main HUD Grid -->
+        <main class="main-grid" id="dashboard-view">
+            <!-- Topology Area -->
+            <section class="panel topo-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Zero Trust Network Architecture</h2>
+                </div>
+                <div class="topo-container">
+                    <svg id="topo-svg" viewBox="0 0 800 450">
+                        <defs>
+                            <filter id="f-glow">
+                                <feGaussianBlur stdDeviation="2" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+                        <!-- Links (8-node mesh) -->
+                        <line x1="100" y1="225" x2="250" y2="100" class="link l1" /> <!-- User -> Device -->
+                        <line x1="100" y1="225" x2="250" y2="350" class="link l2" /> <!-- User -> IDP -->
+                        <line x1="250" y1="100" x2="400" y2="225" class="link l3" /> <!-- Device -> Gateway -->
+                        <line x1="250" y1="350" x2="300" y2="350" class="link l4" /> <!-- IDP -> Policy_SRV -->
+                        <line x1="300" y1="350" x2="400" y2="225" class="link l5" /> <!-- Policy_SRV -> Gateway -->
+                        <line x1="400" y1="225" x2="550" y2="100" class="link l6" /> <!-- Gateway -> PQC_KMS -->
+                        <line x1="400" y1="225" x2="550" y2="350" class="link l7" /> <!-- Gateway -> Asset_SRV -->
+                        <line x1="550" y1="100" x2="700" y2="225" class="link l8" /> <!-- PQC_KMS -> Resource -->
+                        <line x1="550" y1="350" x2="700" y2="225" class="link l9" /> <!-- Asset_SRV -> Resource -->
+
+                        <!-- Nodes (8 Total) -->
+                        <g class="node n-user" transform="translate(100, 225)">
+                            <circle r="12" />
+                            <text dy="25" text-anchor="middle">USER_IDENTITY</text>
+                        </g>
+                        <g class="node n-device" transform="translate(250, 100)">
+                            <circle r="12" />
+                            <text dy="25" text-anchor="middle">TRUST_DEVICE</text>
+                        </g>
+                        <g class="node n-idp" transform="translate(250, 350)">
+                            <circle r="12" />
+                            <text dy="25" text-anchor="middle">IDP_AUTH</text>
+                        </g>
+                        <g class="node n-policy" transform="translate(320, 350)">
+                            <circle r="12" />
+                            <text dy="25" text-anchor="middle">POLICY_SRV</text>
+                        </g>
+                        <g class="node n-gateway" transform="translate(400, 225)">
+                            <circle r="18" />
+                            <text dy="35" text-anchor="middle">PEP_GATEWAY</text>
+                        </g>
+                        <g class="node n-kms" transform="translate(550, 100)">
+                            <circle r="12" />
+                            <text dy="25" text-anchor="middle">PQC_KMS</text>
+                        </g>
+                        <g class="node n-asset" transform="translate(550, 350)">
+                            <circle r="12" />
+                            <text dy="25" text-anchor="middle">ENC_ASSETS</text>
+                        </g>
+                        <g class="node n-resource" transform="translate(700, 225)">
+                            <circle r="15" />
+                            <text dy="30" text-anchor="middle">SECURE_APP</text>
+                        </g>
+                    </svg>
+                </div>
+                <div style="padding-top: 1rem; border-top: 1px solid var(--border-dim);">
+                    <button class="btn-v3 primary" id="sim-trigger">EXECUTE_PQC_SIMULATION</button>
+                    <span id="sim-log" class="dim" style="font-size: 0.6rem; margin-left:1rem;">AWAIT_V3.1_INPUT
+                        [00.00.00]</span>
+                </div>
+            </section>
+
+            <!-- Statistical Analysis -->
+            <aside class="panel analysis-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Data Assessment Grid</h2>
+                </div>
+                <div class="gauge-grid">
+                    <div class="gauge-card">
+                        <div class="gauge-label dim" style="font-size:0.5rem">TRUST_SCORE</div>
+                        <div class="gauge-circle">
+                            <svg class="gauge-svg">
+                                <circle class="gauge-bg" cx="40" cy="40" r="35" />
+                                <circle class="gauge-val" id="trust-gauge" cx="40" cy="40" r="35" />
+                            </svg>
+                            <span class="gauge-text" id="trust-gauge-txt">98</span>
+                        </div>
+                    </div>
+                    <div class="gauge-card">
+                        <div class="gauge-label dim" style="font-size:0.5rem">PQC_LATENCY</div>
+                        <div class="gauge-circle">
+                            <svg class="gauge-svg">
+                                <circle class="gauge-bg" cx="40" cy="40" r="35" />
+                                <circle class="gauge-val" id="pqc-gauge" cx="40" cy="40" r="35"
+                                    style="stroke: var(--cyan); stroke-dashoffset: 180;" />
+                            </svg>
+                            <span class="gauge-text cyan" id="pqc-lat-txt">12ms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-header" style="margin-top: 1rem;">
+                    <h2 class="panel-title">Anomaly Signal</h2>
+                </div>
+                <canvas id="anomaly-canvas" class="anomaly-canvas"></canvas>
+
+                <div class="panel-header" style="margin-top: 1rem;">
+                    <h2 class="panel-title">System Parameters</h2>
+                </div>
+                <div class="tactical-dump" style="font-size: 0.61rem; line-height: 2;">
+                    <div><span class="dim">BUILD:</span> <span class="white">ZTNA_HYPER_DETAIL_3.1</span></div>
+                    <div><span class="dim">KERNEL:</span> <span class="white">PQC_OQS_KYBER</span></div>
+                    <div><span class="dim">ENTROPY:</span> <span class="lime">OPTIMIZED</span></div>
+                    <div><span class="dim">SESSION:</span> <span class="cyan" id="v3-ses-id">X-9821-AF</span></div>
+                </div>
+            </aside>
+
+            <!-- Telemetry Logs -->
+            <section class="panel telemetry-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Real-time Telemetry Stream</h2>
+                </div>
+                <div class="telemetry-stream" id="v3-stream">
+                    <!-- Logs injected via JS -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Overlays -->
+        <div id="devices-view" class="tab-overlay">
+            <h2 class="panel-title">DEVICE_HARDWARE_LEDGER</h2>
+            <table class="v3-table">
+                <thead>
+                    <tr>
+                        <th>NODE_ID</th>
+                        <th>OS_TYPE</th>
+                        <th>TRUST_STATE</th>
+                        <th>SEC_LVL</th>
+                        <th>CMD</th>
+                    </tr>
+                </thead>
+                <tbody id="v3-device-body"></tbody>
+            </table>
+        </div>
+        <div id="policies-view" class="tab-overlay">
+            <h2 class="panel-title">POLICY_ENGINE_RULES</h2>
+            <div id="v3-policy-grid"
+                style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;"></div>
+        </div>
+        <div id="logs-view" class="tab-overlay">
+            <h2 class="panel-title">AUDIT_HISTORIC_FEED</h2>
+            <div id="v3-full-logs" class="telemetry-stream"></div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
